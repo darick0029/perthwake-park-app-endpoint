@@ -14,12 +14,12 @@
 class Get_All_Users_Route {
     
     public function __construct() {
-        add_action( 'rest_api_init', array($this, 'pwp_get_all_users_route') );  
+        //add_action( 'rest_api_init', array($this, 'pwp_get_all_users_route') );  
     }
 
     public function pwp_get_all_users() {
 
-            global $wpdb;
+/*            global $wpdb;
             $pref = $wpdb->prefix;
 
             $users = $wpdb->get_results( 
@@ -63,7 +63,7 @@ class Get_All_Users_Route {
 
             return [ 
                 "app_user_data"  => $users_data,
-            ];
+            ];*/
 
 
     }
@@ -79,7 +79,7 @@ class Get_All_Users_Route {
 
 new Get_All_Users_Route();
 
-?>
+
 
 
 

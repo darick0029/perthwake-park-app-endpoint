@@ -82,6 +82,3 @@ class GET_User_By_ID {
 new GET_User_By_ID();
 
 
-?>
-
-
