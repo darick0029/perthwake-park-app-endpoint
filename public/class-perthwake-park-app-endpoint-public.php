@@ -64,7 +64,7 @@ class Perthwake_Park_App_Endpoint_Public {
         require_once plugin_dir_path( dirname( __FILE__ ) ) . 'public/endpoints/perthwake-park-app-endpoint-get-user-by-id-class.php';
         
         // Update user by ID route
-        require_once plugin_dir_path( dirname( __FILE__ ) ) . 'public/endpoints/perthwake-park-app-endpoint-update-user-by-id-class.php';
+        require_once plugin_dir_path( dirname( __FILE__ ) ) . 'public/endpoints/perthwake-park-app-endpoint-update-user-by-id-class.php'; 
         
     }
 

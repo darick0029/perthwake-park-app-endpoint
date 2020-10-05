@@ -19,49 +19,57 @@ class GET_User_By_ID {
 
     public function pwp_get_user_by_ID( WP_REST_Request $request ) {
 
-            global $wpdb;
-            $pref = $wpdb->prefix;
-
-            $users = $wpdb->get_results( 
-                 $wpdb->prepare("
-
-                    SELECT DISTINCT ID, user_nicename, user_email FROM {$pref}users as u
-                        JOIN {$pref}usermeta as um
-                            ON u.ID = um.user_id
-                                WHERE u.ID = {$request['id']}
-                 ")
-            );  
-
             $users_data = [];
 
-            foreach( $users as $user ) {
+            $data = [];        
 
-                    $data = [];        
+            if( have_rows('waivers', "user_{$request['id']}") ): 
 
-                    if( have_rows('waiver', "user_$user->ID") ): 
+                    while( have_rows('waivers', "user_{$request['id']}") ): the_row();
 
-                            while( have_rows('waiver', "user_$user->ID") ): the_row();
+                            $data[] = [ 
+                                "completed" => get_sub_field('completed'),
+                                "name" => get_sub_field('name'), 
+                                "phone" => get_sub_field('phone'),
+                                "birthdate"  => get_sub_field('dob'),
+                                "postcode"  => get_sub_field('postcode'),
+                                "country"  => get_sub_field('country'),
+                                "agreement"  => get_sub_field('agreement'),
+                                "emergency_contact" => get_sub_field('emergency_contact'),
+                                "additional_minors" => get_sub_field('additional_minors'),
+                                "signature" => get_sub_field('signature'),
+                            ];
+                            
+                            $dob = get_sub_field('dob');
 
-                                    $data[] = [ 
-                                        "name" => get_sub_field('name'), 
-                                        "lastname" => get_sub_field('last_name'),
-                                        "birthday"  => get_sub_field('birthday')
-                                    ];
+                    endwhile;
 
-                            endwhile;
+            endif;     
+            
+            // Wordpres users default meta
+            $first_name = get_user_meta( $request['id'], 'first_name', true );
+            $last_name = get_user_meta( $request['id'], 'last_name', true );
+            
+            // Woocommerce customers meta
+            $billing_first_name = get_user_meta( $request['id'], 'billing_first_name', true );
+            $billing_last_name = get_user_meta( $request['id'], 'billing_last_name', true );
+            $billing_phone = get_user_meta( $request[id], 'billing_phone', true );
+            $billing_postcode = get_user_meta( $request[id], 'billing_postcode', true );
+            $billing_country = get_user_meta( $request[id], 'billing_country', true );
+            
+            $users_data[] = [ 
+                "ID" => $request['id'],
+                "first_name" => $first_name ? $first_name : $billing_first_name,
+                "last_name" => $last_name ? $last_name : $billing_last_name,
+                'birthdate' => $data[0]['birthdate'],
+                'phone' => $billing_phone,
+                'postcode' => $billing_postcode,
+                'country'   => $billing_country,
+                'emergency_contact' => $data[0]['emergency_contact'],
+                "waivers" => $data
+            ];
 
-                    endif;               
-
-                    $users_data[] = [ 
-                        "ID" => $user->ID,
-                        "username" => $user->user_nicename,
-                        "useremail" => $user->user_email,
-                        "waivers" => $data
-                    ];
-
-            }
-
-            if($users) {
+            if($users_data) {
                 return [ "app_user_data"  => $users_data ];
             } else {
                 return [ "message" => "No user Found" ];
@@ -80,5 +88,6 @@ class GET_User_By_ID {
 }
 
 new GET_User_By_ID();
+
 
 

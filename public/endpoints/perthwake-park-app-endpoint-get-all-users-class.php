@@ -14,12 +14,12 @@
 class Get_All_Users_Route {
     
     public function __construct() {
-        //add_action( 'rest_api_init', array($this, 'pwp_get_all_users_route') );  
+        add_action( 'rest_api_init', array($this, 'pwp_get_all_users_route') );  
     }
 
     public function pwp_get_all_users() {
 
-/*            global $wpdb;
+            global $wpdb;
             $pref = $wpdb->prefix;
 
             $users = $wpdb->get_results( 
@@ -28,7 +28,7 @@ class Get_All_Users_Route {
                     SELECT DISTINCT ID, user_nicename, user_email FROM {$pref}users as u
                         JOIN {$pref}usermeta as um
                         ON u.ID = um.user_id
-
+                        LIMIT 10
                  ")
             );  
 
@@ -38,24 +38,47 @@ class Get_All_Users_Route {
 
                     $data = [];        
 
-                    if( have_rows('waiver', "user_$user->ID") ): 
+                    if( have_rows('waivers', "user_$user->ID") ): 
 
-                            while( have_rows('waiver', "user_$user->ID") ): the_row();
+                            while( have_rows('waivers', "user_$user->ID") ): the_row();
 
                                     $data[] = [ 
+                                        "completed" => get_sub_field('completed'),
                                         "name" => get_sub_field('name'), 
-                                        "lastname" => get_sub_field('last_name'),
-                                        "birthday"  => get_sub_field('birthday')
+                                        "phone" => get_sub_field('phone'),
+                                        "birthdate"  => get_sub_field('dob'),
+                                        "postcode"  => get_sub_field('postcode'),
+                                        "country"  => get_sub_field('country'),
+                                        "agreement"  => get_sub_field('agreement'),
+                                        "emergency_contact" => get_sub_field('emergency_contact'),
+                                        "additional_minors" => get_sub_field('additional_minors'),
+                                        "signature" => get_sub_field('signature'),
                                     ];
 
                             endwhile;
 
-                    endif;               
+                    endif;   
+                    
+                    // Wordpres users default meta
+                    $first_name = get_user_meta( $user->ID, 'first_name', true );
+                    $last_name = get_user_meta( $user->ID, 'last_name', true );
+                    
+                    // Woocommerce customers meta
+                    $billing_first_name = get_user_meta( $user->ID, 'billing_first_name', true );
+                    $billing_last_name = get_user_meta( $user->ID, 'billing_last_name', true );
+                    $billing_phone = get_user_meta( $user->ID, 'billing_phone', true );
+                    $billing_postcode = get_user_meta( $user->ID, 'billing_postcode', true );
+                    $billing_country = get_user_meta( $user->ID, 'billing_country', true );                    
 
                     $users_data[] = [ 
                         "ID" => $user->ID,
-                        "username" => $user->user_nicename,
-                        "useremail" => $user->user_email,
+                        "first_name" => $first_name ? $first_name : $billing_first_name,
+                        "last_name" => $last_name ? $last_name : $billing_last_name,
+                        'birthdate' => $data[0]['birthdate'],
+                        'phone' => $billing_phone,
+                        'postcode' => $billing_postcode,
+                        'country'   => $billing_country,
+                        'emergency_contact' => $data[0]['emergency_contact'],
                         "waivers" => $data
                     ];
 
@@ -63,7 +86,7 @@ class Get_All_Users_Route {
 
             return [ 
                 "app_user_data"  => $users_data,
-            ];*/
+            ];
 
 
     }
@@ -78,8 +101,6 @@ class Get_All_Users_Route {
 }
 
 new Get_All_Users_Route();
-
-
 
 
 
